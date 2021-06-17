@@ -1,0 +1,41 @@
+{
+  "name": "vexflow-mouse-events",
+  "version": "0.0.1",
+  "description": "Mouse event tooling for vexflow",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gdicristofaro/vexflowMouseEvents.git"
+  },
+  "scripts": {
+    "compile": "tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "prepublish": "npm run compile"
+  },
+  "keywords": [
+    "vexflow",
+    "mouse",
+    "events"
+  ],
+  "author": {
+    "name": "gdicristofaro"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gdicristofaro/vexflowMouseEvents/issues"
+  },
+  "dependencies": {
+    "@types/vexflow": "^3.0.0",
+    "vexflow": "^3.0.9"
+  },
+  "readmeFilename": "README.md",
+  "homepage": "https://github.com/gdicristofaro/vexflowMouseEvents",
+  "standard": {
+    "ignore": [],
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "after"
+    ]
+  }
+}
