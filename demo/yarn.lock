@@ -1849,6 +1849,11 @@
   dependencies:
     source-map "^0.6.1"
 
+"@types/vexflow@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/vexflow/-/vexflow-3.0.0.tgz#f13ce2a6c8721c22c6ea109e7f4b9ad9776065b9"
+  integrity sha512-53QdJHpx5zf+lHW0vXfgugPTK7PSMlUl/jKl2fHmagmLQyUHl+59tSPGO1NjYN2+QKkPtwCc7KMI/YLzzuHrmA==
+
 "@types/webpack-sources@*":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@types/webpack-sources/-/webpack-sources-2.1.0.tgz#8882b0bd62d1e0ce62f183d0d01b72e6e82e8c10"
@@ -10912,7 +10917,10 @@ verror@1.10.0:
     extsprintf "^1.2.0"
 
 "vexflow-mouse-events@file:../lib":
-  version "0.0.0"
+  version "0.0.1"
+  dependencies:
+    "@types/vexflow" "^3.0.0"
+    vexflow "^3.0.9"
 
 vexflow@^3.0.9:
   version "3.0.9"
