@@ -10916,7 +10916,7 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vexflow-mouse-events@file:../lib":
+"vexflow-mouse-events@file:../module":
   version "0.0.1"
   dependencies:
     "@types/vexflow" "^3.0.0"
