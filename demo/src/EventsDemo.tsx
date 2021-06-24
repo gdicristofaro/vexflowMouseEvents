@@ -1,8 +1,10 @@
 import React from "react";
-import {getNoteMap, getScoreMouseEvent, ScoreMouseEvent} from "vexflow-mouse-events"
+import {getNoteMap, getScoreMouseEvent, ScoreMouseEvent} from './eventtools' //"vexflow-mouse-events"
 import { getMinuet } from "./score";
 
-const eventDemoId = "eventDemo";
+const EVENT_DEMO_ID = "eventDemo";
+const LEFT_OFFSET = 30;
+const TOP_OFFSET = 30;
 
 export default class App extends React.Component<any, {mouseEvent: any}> {
   myRef: any = null;
@@ -14,14 +16,14 @@ export default class App extends React.Component<any, {mouseEvent: any}> {
   }
 
   componentDidMount() {
-    this.systems = getMinuet(eventDemoId);
+    this.systems = getMinuet(EVENT_DEMO_ID);
   }
 
 
   onClick(e: any, systems: any[]) {
     let rect = this.myRef.current.getBoundingClientRect();
-    let mouseX = e.clientX - rect.left;
-    let mouseY = e.clientY - rect.top;
+    let mouseX = e.clientX - rect.left - LEFT_OFFSET;
+    let mouseY = e.clientY - rect.top - TOP_OFFSET;
 
     let pt = { x: mouseX, y: mouseY };
     let evt = getScoreMouseEvent(systems, pt, getNoteMap(), true);
@@ -34,8 +36,8 @@ export default class App extends React.Component<any, {mouseEvent: any}> {
     return (
       <div style={{width: '100vw', height: '100vh', overflow: 'auto', margin: 0, padding: 0}}>
         <div style={{marginBottom: '300px'}}>
-          <div id={eventDemoId}
-            style={{paddingLeft: '30px', paddingTop: '30px'}}
+          <div id={EVENT_DEMO_ID}
+            style={{paddingLeft: `${LEFT_OFFSET}px`, paddingTop: `${TOP_OFFSET}px`}}
             ref={this.myRef}
             onClick={(e) => this.onClick(e, this.systems)}
           />

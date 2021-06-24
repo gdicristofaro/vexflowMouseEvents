@@ -10916,12 +10916,6 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-"vexflow-mouse-events@file:../module":
-  version "0.0.1"
-  dependencies:
-    "@types/vexflow" "^3.0.0"
-    vexflow "^3.0.9"
-
 vexflow@^3.0.9:
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/vexflow/-/vexflow-3.0.9.tgz#85bc89ae5224670d3837d0b34c521b9e69abc89c"

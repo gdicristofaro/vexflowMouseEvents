@@ -112,7 +112,7 @@ export const getMinuet = (elementId: string) => {
     /*  Measure 3 */
     system = makeSystem(150);
     system.addStave({
-        voices: [voice([notes('E5/q[id="m3a"]'), beam(notes('C5/8, D5, E5, F5', { stem: 'down' }))].reduce(concat))],
+        voices: [voice([notes('E5/q[id="m3a"]'), beam(notes('(C#5 Gb5)/8, D5, En5, F5', { stem: 'down' }))].reduce(concat))],
     });
     // id('m3a').addModifier(vf.Fingering({ number: '3', position: 'above' }), 0);
 

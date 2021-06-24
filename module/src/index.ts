@@ -134,7 +134,9 @@ function getTickablesAndBeats(voice: VF.Flow.Voice): TickableAndBeat[] {
     // track the current beats 
     // (i.e. given a quarter and two eighths, the second eighth is at 3/8)
     let adjusted = thisTicks.clone().divide(resolution, 1);
-    totalTicks = totalTicks.clone().add(adjusted, undefined as any).simplify();
+    totalTicks = totalTicks.clone()
+      .add((adjusted as any).numerator, (adjusted as any).denominator)
+      .simplify();
   }
 
   // return the item before and after for what exists
@@ -581,7 +583,7 @@ function getVoicesAccidentals(voices: VF.Flow.Voice[], stopBeat: VF.Flow.Fractio
   voices
     .flatMap(v => getTickablesAndBeats(v))
     .flatMap(({ tickable, beat }) => {
-      return (tickable instanceof VF.Flow.StaveNote) ?
+      return ((tickable as any).getCategory() === VF.Flow.StaveNote.CATEGORY) ?
         (tickable as VF.Flow.StaveNote).getKeys().map(key => ({ key, beat })) :
         []
     })
@@ -615,7 +617,7 @@ function getAccidentals(systems: VF.Flow.System[], staveIdx: number, measureIdx:
       let staveParts = (system as any).parts;
       if (staveParts.length > staveIdx && staveParts[staveIdx].stave) {
         let stave = staveParts[staveIdx].stave as VF.Flow.Stave;
-        let keySig = stave.getModifiers().find(m => m instanceof VF.Flow.KeySignature);
+        let keySig = stave.getModifiers().find(m => m.getCategory() == VF.Flow.KeySignature.name);
         if (keySig) {
           keySigAccidentals = getKeySigAccidentals(keySig as VF.Flow.KeySignature);
           break;
@@ -623,7 +625,7 @@ function getAccidentals(systems: VF.Flow.System[], staveIdx: number, measureIdx:
       }
     }
 
-    let voices: VF.Flow.Voice[] | undefined = (systems[measureIdx] as any)?.parts?.voices;
+    let voices: VF.Flow.Voice[] | undefined = (systems[measureIdx] as any)?.parts?.flatMap((p: any) => p.voices);
     if (voices) {
       voiceAccidentals = getVoicesAccidentals(voices, measureBeat);
     }
