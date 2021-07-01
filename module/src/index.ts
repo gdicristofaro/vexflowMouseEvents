@@ -376,9 +376,9 @@ function getNoteAndOctave(
   let noteLetter = noteLetterMap.noteLetter;
   let accidentalOffset = 0;
   if (effectiveAccidentals) {
-    let accidental = effectiveAccidentals.keySig[noteLetter];
+    let accidental = effectiveAccidentals.accidentalOverrides[noteLetter + octave];
     if (!accidental) {
-      accidental = effectiveAccidentals.accidentalOverrides[noteLetter + octave];
+      accidental = effectiveAccidentals.keySig[noteLetter];
     }
 
     if (accidental) {
@@ -488,7 +488,7 @@ function parseNoteAndOctave(noteWithOctave: string): { note: Note, octave: numbe
 
   let note = parseNote(pieces[0]);
   let octave = parseInt(pieces[1], 10);
-  return (note && octave && octave !== NaN)
+  return (note && octave && !isNaN(octave))
     ? { note, octave }
     : undefined;
 }
@@ -568,7 +568,7 @@ function getKeySigAccidentals(keySig: VF.Flow.KeySignature): KeySigAccidentals |
  */
 function compareFractions(a: VF.Flow.Fraction, b: VF.Flow.Fraction): number {
   let difference = (a.clone() as any).subtract(b).numerator as number;
-  return Math.max(1, Math.min(-1, difference));
+  return Math.min(1, Math.max(-1, difference));
 }
 
 /**
@@ -583,18 +583,39 @@ function getVoicesAccidentals(voices: VF.Flow.Voice[], stopBeat: VF.Flow.Fractio
   voices
     .flatMap(v => getTickablesAndBeats(v))
     .flatMap(({ tickable, beat }) => {
-      return ((tickable as any).getCategory() === VF.Flow.StaveNote.CATEGORY) ?
-        (tickable as VF.Flow.StaveNote).getKeys().map(key => ({ key, beat })) :
-        []
+      if ((tickable as any).getCategory() === VF.Flow.StaveNote.CATEGORY) {
+        let staveNote = tickable as VF.Flow.StaveNote;
+        let accidentals: { [idx: number]: string } = {};
+        if ((staveNote as any).modifiers) {
+          for (let modifier of (staveNote as any).modifiers) {
+            if (modifier.getCategory() === VF.Flow.Accidental.CATEGORY) {
+              accidentals[modifier.index] = modifier.type;
+            }
+          }
+        }
+
+        return (tickable as VF.Flow.StaveNote).getKeys()
+          .map((key, idx) => ({ key, beat, accidental: accidentals[idx] }));
+
+      } else {
+        return [];
+      }
     })
-    .map(({ key, beat }) => ({ note: parseNoteAndOctave(key), beat }))
+    .map(({ key, beat, accidental }) => {
+      let parsedNote = parseNoteAndOctave(key);
+      if (accidental && parsedNote?.note && !parsedNote.note.accidental) {
+        parsedNote.note.accidental = accidental as Accidental;
+      }
+
+      return { note: parsedNote, beat };
+    })
     .filter(({ note, beat }) => (note && note.note.accidental && compareFractions(beat, stopBeat) <= 0))
     .sort((a, b) => compareFractions(a.beat, b.beat))
     .forEach(({ note }) => {
       if (!note || !note.note.accidental)
         return;
 
-      accidentalMap[note.note.noteLetter] = note.note.accidental;
+      accidentalMap[note.note.noteLetter + note.octave] = note.note.accidental;
     });
 
   return accidentalMap;
@@ -617,7 +638,7 @@ function getAccidentals(systems: VF.Flow.System[], staveIdx: number, measureIdx:
       let staveParts = (system as any).parts;
       if (staveParts.length > staveIdx && staveParts[staveIdx].stave) {
         let stave = staveParts[staveIdx].stave as VF.Flow.Stave;
-        let keySig = stave.getModifiers().find(m => m.getCategory() == VF.Flow.KeySignature.name);
+        let keySig = stave.getModifiers().find(m => m.getCategory() === (VF.Flow.KeySignature as any).CATEGORY);
         if (keySig) {
           keySigAccidentals = getKeySigAccidentals(keySig as VF.Flow.KeySignature);
           break;
@@ -720,15 +741,15 @@ export function getScoreMouseEvent(
 
   let sysMeasureResult = getClosestSystemMeasure(systems, pt);
 
-  var closestSystemMeasure: VF.Flow.System | undefined = undefined;
-  var measureIdx: number | undefined = undefined;
-  var closestStaveIdx: number | undefined = undefined;
-  var closestStave: VF.Flow.Stave | undefined = undefined;
-  var closestTickable: TickableAndBeat | undefined = undefined;
-  var closestTickableBefore: TickableAndBeat | undefined = undefined;
-  var centerLineOffset: number | undefined = undefined;
-  var effectivePitch: NoteAndOctave | undefined = undefined;
-  var accidentals: EffectiveAccidentals | undefined = undefined;
+  let closestSystemMeasure: VF.Flow.System | undefined = undefined;
+  let measureIdx: number | undefined = undefined;
+  let closestStaveIdx: number | undefined = undefined;
+  let closestStave: VF.Flow.Stave | undefined = undefined;
+  let closestTickable: TickableAndBeat | undefined = undefined;
+  let closestTickableBefore: TickableAndBeat | undefined = undefined;
+  let centerLineOffset: number | undefined = undefined;
+  let effectivePitch: NoteAndOctave | undefined = undefined;
+  let accidentals: EffectiveAccidentals | undefined = undefined;
 
   if (sysMeasureResult) {
     closestSystemMeasure = sysMeasureResult.item;
@@ -738,18 +759,15 @@ export function getScoreMouseEvent(
       (closestSystemMeasure as any).parts.map((p: any) => p.stave as VF.Flow.Stave),
       (stave: VF.Flow.Stave) => Math.abs(pt.y - getStaveCenterY(stave)));
 
-    var { item: closestStave, idx: closestStaveIdx } =
-      (staveResult) ? staveResult : { item: undefined, idx: undefined };
-
-    var closestTickable: TickableAndBeat | undefined = undefined;
-    var closestTickableBefore: TickableAndBeat | undefined = undefined;
+    ({ item: closestStave, idx: closestStaveIdx } =
+      (staveResult) ? staveResult : { item: undefined, idx: undefined });
 
     if (closestStave && closestStaveIdx !== undefined) {
       centerLineOffset = getCenterLineOffset(closestStave, pt);
 
       if ((closestSystemMeasure as any)?.parts?.length > closestStaveIdx) {
         let voices: VF.Flow.Voice[] = (closestSystemMeasure as any).parts[closestStaveIdx].voices;
-        var { closestTickable, closestTickableBefore } = getClosestTickableResult(voices, pt);
+        ({ closestTickable, closestTickableBefore } = getClosestTickableResult(voices, pt));
 
         if (noteMap && closestTickableBefore && centerLineOffset !== undefined) {
           let pitchTick = closestTickableBefore.tickable as any;

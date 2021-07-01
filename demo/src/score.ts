@@ -76,7 +76,6 @@ export const getMinuet = (elementId: string) => {
         .addTimeSignature('3/4')
         .setTempo({ name: 'Allegretto', duration: 'h', dots: 1, bpm: 66 }, -30);
 
-    console.log(system);
     system
         .addStave({ voices: [voice(notes('(G3 B3 D4)/h, A3/q', { clef: 'bass' }))] })
         .addClef('bass')

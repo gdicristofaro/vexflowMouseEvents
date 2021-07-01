@@ -376,9 +376,9 @@ function getNoteAndOctave(
   let noteLetter = noteLetterMap.noteLetter;
   let accidentalOffset = 0;
   if (effectiveAccidentals) {
-    let accidental = effectiveAccidentals.keySig[noteLetter];
+    let accidental = effectiveAccidentals.accidentalOverrides[noteLetter + octave];
     if (!accidental) {
-      accidental = effectiveAccidentals.accidentalOverrides[noteLetter + octave];
+      accidental = effectiveAccidentals.keySig[noteLetter];
     }
 
     if (accidental) {
@@ -585,21 +585,21 @@ function getVoicesAccidentals(voices: VF.Flow.Voice[], stopBeat: VF.Flow.Fractio
     .flatMap(({ tickable, beat }) => {
       if ((tickable as any).getCategory() === VF.Flow.StaveNote.CATEGORY) {
         let staveNote = tickable as VF.Flow.StaveNote;
-        let accidentals : { [idx: number]: string } = {};
+        let accidentals: { [idx: number]: string } = {};
         if ((staveNote as any).modifiers) {
           for (let modifier of (staveNote as any).modifiers) {
             if (modifier.getCategory() === VF.Flow.Accidental.CATEGORY) {
               accidentals[modifier.index] = modifier.type;
             }
-          }  
+          }
         }
-        
+
         return (tickable as VF.Flow.StaveNote).getKeys()
           .map((key, idx) => ({ key, beat, accidental: accidentals[idx] }));
 
       } else {
         return [];
-      } 
+      }
     })
     .map(({ key, beat, accidental }) => {
       let parsedNote = parseNoteAndOctave(key);
@@ -615,7 +615,7 @@ function getVoicesAccidentals(voices: VF.Flow.Voice[], stopBeat: VF.Flow.Fractio
       if (!note || !note.note.accidental)
         return;
 
-      accidentalMap[note.note.noteLetter] = note.note.accidental;
+      accidentalMap[note.note.noteLetter + note.octave] = note.note.accidental;
     });
 
   return accidentalMap;

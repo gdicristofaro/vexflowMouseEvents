@@ -28,6 +28,7 @@ export default class App extends React.Component<any, {mouseEvent: any}> {
     let pt = { x: mouseX, y: mouseY };
     let evt = getScoreMouseEvent(systems, pt, getNoteMap(), true);
     this.setState({mouseEvent: evt});
+    console.log(evt);
   }
 
   render() {
@@ -47,6 +48,7 @@ export default class App extends React.Component<any, {mouseEvent: any}> {
             position: 'absolute', 
             bottom: '25px',
             right: '25px', 
+            marginLeft: '25px',
             padding: '0px 5px',
             backgroundColor: '#fafafa',
             borderRadius: '8px',
