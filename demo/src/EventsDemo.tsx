@@ -1,5 +1,5 @@
 import React from "react";
-import {getNoteMap, getScoreMouseEvent, ScoreMouseEvent} from './eventtools' //"vexflow-mouse-events"
+import {getNoteMap, getScoreMouseEvent, ScoreMouseEvent} from "vexflow-mouse-events"
 import { getMinuet } from "./score";
 
 const EVENT_DEMO_ID = "eventDemo";
