@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAAA,gBACI,SAAU,CACV,QACJ","file":"main.db182149.chunk.css","sourcesContent":["html, body, #root {\n    padding: 0;\n    margin: 0;\n}"]}
