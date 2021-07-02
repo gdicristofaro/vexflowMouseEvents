@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build-module": "cd module && npm install && npm run build",
+    "build-demo": "npm run build-module && cd demo && npm install && npm update vexflow-mouse-events && npm run build",
+    "deploy": "gh-pages -d demo/build"
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
+  }
+}
