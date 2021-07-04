@@ -24,7 +24,7 @@
     "url": "https://github.com/gdicristofaro/vexflowMouseEvents/issues"
   },
   "dependencies": {
-    "@types/vexflow": "^3.0.0",
+    "@types/vexflow": "^3.0.1",
     "vexflow": "^3.0.9"
   },
   "readmeFilename": "README.md",
